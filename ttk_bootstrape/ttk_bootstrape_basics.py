@@ -16,17 +16,17 @@ root = ttk.Window()
 bootstyle type : "info-outline", "infooutline", "info outline", "outline-info", ("info", "outline"), (INFO, OUTLINE)
 '''
 
-b1 = ttk.Button(root, text='Solid-btn', bootstyle=SUCCESS)
-b1.pack(side=LEFT, padx=5, pady=10)
+# b1 = ttk.Button(root, text='Solid-btn', bootstyle=SUCCESS)
+# b1.pack(side=LEFT, padx=5, pady=10)
 
-b2 = ttk.Button(root, text="Outline-btn", bootstyle=(INFO, OUTLINE))
-b2.pack(side=LEFT, padx=5, pady=10)
+# b2 = ttk.Button(root, text="Outline-btn", bootstyle=(INFO, OUTLINE))
+# b2.pack(side=LEFT, padx=5, pady=10)
 
-b3 = ttk.Button(root, text="Link-btn", bootstyle=(INFO, LINK))
-b3.pack(side=LEFT, padx=5, pady=10)
+# b3 = ttk.Button(root, text="Link-btn", bootstyle=(INFO, LINK))
+# b3.pack(side=LEFT, padx=5, pady=10)
 
-b4 = ttk.Button(root, text="Disabled", bootstyle=DANGER, state=DISABLED)
-b4.pack(side=LEFT, padx=5, pady=10)
+# b4 = ttk.Button(root, text="Disabled", bootstyle=DANGER, state=DISABLED)
+# b4.pack(side=LEFT, padx=5, pady=10)
 
 
 # OUTLINE BUTTON
@@ -56,15 +56,26 @@ b4.pack(side=LEFT, padx=5, pady=10)
 
 
 # CHECKBUTTON - ROUND TOGGLE, SQUARE-TOGGLE, DISABLED
-for color in root.style.colors:
-    # b = ttk.Checkbutton(root, text=color, bootstyle=(color, "round-toggle"))
-    b = ttk.Checkbutton(root, text=color, bootstyle=(color, "square-toggle"))
-    # b = ttk.Checkbutton(root, text=color, bootstyle=(color, "square-toggle"), state=DISABLED)
-    b.pack(side=LEFT, padx=5, pady=10)
+# for color in root.style.colors:
+#     # b = ttk.Checkbutton(root, text=color, bootstyle=(color, "round-toggle"))
+#     b = ttk.Checkbutton(root, text=color, bootstyle=(color, "square-toggle"))
+#     # b = ttk.Checkbutton(root, text=color, bootstyle=(color, "square-toggle"), state=DISABLED)
+#     b.pack(side=LEFT, padx=5, pady=10)
 
 
 #####################################################################################################
 
+
+
+#####################################################################################################
+# COMBOBOX
+#####################################################################################################
+
+for color in root.style.colors:
+    c = ttk.Combobox(root, text=color, bootstyle=color, state=READONLY)
+    c.pack(side=LEFT, padx=5, pady=10)
+
+#####################################################################################################
 
 
 root.mainloop()
