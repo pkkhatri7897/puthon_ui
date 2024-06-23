@@ -19,6 +19,7 @@ from PIL import Image, ImageTk
 
 import serial
 import struct
+from rfid_reader import RFID_reader
 
 
 class Reader():
@@ -41,7 +42,7 @@ class Reader():
         self.action_name = "Entrance"
         self.time_duration = 5
 
-        # CSV
+        # CSV FOR TAGS
         self.tags_details = []
         self.tags_references = {}
         # self.home_loc = os.path.expanduser('')
@@ -50,7 +51,10 @@ class Reader():
         os.makedirs(self.orange_rfid, exist_ok=True)
         self.tags_details_csv = os.path.join(self.orange_rfid, "tags_details.csv")
 
-        ###############################################################################  
+        # CSV FOR MAIN ENTRY
+        self.history_csv = os.path.join(self.orange_rfid, "history.csv")
+
+        ###############################################################################
 
 
         ###############################################################################        
@@ -117,11 +121,11 @@ class Reader():
         self.clear_all = ttk.Button(self.operation_label, text="Clear_all", command=self.clear_all, bootstyle="success-link", style=self.opr_btn_style_type)
         self.clear_all.grid(row=0, column=0, padx=40, pady=5)
         
-        self.clear_all = ttk.Button(self.operation_label, text="Actions", command=self.actions, bootstyle="success-link", style=self.opr_btn_style_type)
-        self.clear_all.grid(row=0, column=1, padx=40, pady=5)
+        self.actions = ttk.Button(self.operation_label, text="Actions", command=self.actions, bootstyle="success-link", style=self.opr_btn_style_type)
+        self.actions.grid(row=0, column=1, padx=40, pady=5)
 
-        self.clear_all = ttk.Button(self.operation_label, text="Tags", command=self.tags, bootstyle="success-link", style=self.opr_btn_style_type)
-        self.clear_all.grid(row=0, column=2, padx=40, pady=5)
+        self.tags = ttk.Button(self.operation_label, text="Tags", command=self.tags, bootstyle="success-link", style=self.opr_btn_style_type)
+        self.tags.grid(row=0, column=2, padx=40, pady=5)
 
         self.operation_root.place(relx=0.15, rely=0.15)
         ###############################################################################
@@ -149,6 +153,18 @@ class Reader():
 
         self.treeview.grid(row=0, column=1, padx=5, pady=5,  sticky="nsew")
 
+        # CSV HANDELING
+        if os.path.exists(self.history_csv) and os.path.getsize(self.history_csv) > 0:
+            df = pd.read_csv(self.history_csv, header=None)
+            if not df.empty:
+            # if df is not None:
+                time_stamp = df[0]
+                references = df[1]
+                tags = df[2]
+                actions = df[3]
+                for i, j, k, l in zip(time_stamp, references, tags, actions):
+                    self.treeview.insert('', 'end', values=(i, j, k, l))
+
         # Configure treeview to expand with the frame
         self.main_entry_label.grid_rowconfigure(0, weight=1)
         self.main_entry_label.grid_columnconfigure(0, weight=1)
@@ -159,11 +175,23 @@ class Reader():
 
 
         ###############################################################################        
+        # SERIAL COMMUNICATION VARIABLES
+        ###############################################################################
+
+        self.SERIAL_PORT = '/dev/ttyUSB0'
+        self.BAUD_RATE = 115200
+        self.reader = RFID_reader(self.SERIAL_PORT, self.BAUD_RATE)
+        self.get_data = False
+
+        ###############################################################################
+
+
+        ###############################################################################        
         # MAIN THREAD
         ###############################################################################
-        # self.read_console_thread = threading.Thread(target=self.read_console)
-        # self.read_console_thread.daemon = True
-        # self.read_console_thread.start()
+        self.read_console_thread = threading.Thread(target=self.read_console)
+        self.read_console_thread.daemon = True
+        self.read_console_thread.start()
         ###############################################################################
         
                 
@@ -193,7 +221,14 @@ class Reader():
 
 
     def clear_all(self):
-        pass
+        # CLEAR TREEVIEW ENTRIES
+        for item in self.treeview.get_children():
+            self.treeview.delete(item)
+
+        # CLEAR ALL ENTRIES ON CSV
+        if os.path.exists(self.history_csv):
+            if os.path.getsize(self.history_csv) > 0:
+                open(self.history_csv, 'w').close()
 
 
     def show_custom_message(self, value1, value2):
@@ -264,7 +299,7 @@ class Reader():
         # CREATE WINDOW
         popup = ttk.Toplevel(root)
         popup.title("Tags")
-        popup.geometry("500x400")
+        popup.geometry("600x400")
 
         # Treeview (list box) with two columns
         treeview = ttk.Treeview(popup, columns=("Column 1", "Column 2"), show="headings")
@@ -285,12 +320,12 @@ class Reader():
         # Entry fields
         entry1_label = ttk.Label(popup, text="Tags :")
         entry1_label.grid(row=1, column=0, pady=5, padx=10, stick="e")
-        entry1 = ttk.Entry(popup, width=30)
+        entry1 = ttk.Entry(popup, width=40)
         entry1.grid(row=1, column=1, pady=5, padx=10, stick="w")
         
         entry2_label = ttk.Label(popup, text="References :")
         entry2_label.grid(row=2, column=0, pady=5, padx=10, stick="e")
-        entry2 = ttk.Entry(popup, width=30)
+        entry2 = ttk.Entry(popup, width=40)
         entry2.grid(row=2, column=1, pady=5, padx=10, stick="w")
 
         
@@ -326,13 +361,13 @@ class Reader():
         
         # BUTTON
         delete_button = ttk.Button(popup, text="Delete Entry", command=delete_selected, bootstyle="success-link", style=self.pop_btn_style_type)
-        delete_button.grid(row=5, column=1, padx=5, pady=10)
+        delete_button.grid(row=3, column=1, padx=5, pady=10)
         
         update_button = ttk.Button(popup, text="Update List", command=update_list, bootstyle="success-link", style=self.pop_btn_style_type)
-        update_button.grid(row=5, column=1, padx=5, pady=10, sticky='e')
+        update_button.grid(row=3, column=1, padx=5, pady=10, sticky="w")
 
         close_button = ttk.Button(popup, text="Close", command=popup.destroy, bootstyle="success-link", style=self.pop_btn_style_type)
-        close_button.grid(row=5, column=2, padx=10, pady=10, sticky='w')
+        close_button.grid(row=3, column=1, padx=5, pady=10, sticky="e")
 
 
     def tags(self):
@@ -363,10 +398,23 @@ class Reader():
 
 
     def __insert_into_treeview(self, time_stamp, references, tag):
+        # UPDATE TREEVIEW DATA
         if self.action_name is not None:
             self.tree.insert("", tk.END, values=(time_stamp, references, tag, self.action_name))
         else:
             tk.messagebox.showerror("Error", "Please update action name first!")
+
+        # UPDATE CSV
+        all_data = {"time_stamp" : [], "references": [], "tag": [], "actions": []}
+        all_data["time_stamp"].append(time_stamp)
+        all_data["references"].append(references)
+        all_data["tag"].append(tag)
+        all_data["actions"].append(self.action_name)
+        df = pd.DataFrame(all_data)
+        if os.path.isfile(self.history_csv):
+            df.to_csv(self.history_csv, mode='a', header=False, index=False)
+        else:
+            df.to_csv(self.history_csv, mode='w', header=False, index=False)
 
 
     def read_console(self):

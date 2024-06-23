@@ -92,67 +92,78 @@
 
 ############ popup with label on entry field
 
-import tkinter as tk
-import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
+# import tkinter as tk
+# import ttkbootstrap as ttk
+# from ttkbootstrap.constants import *
 
 
-class MainApp(ttk.Window):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+# class MainApp(ttk.Window):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
         
-        # Main window settings
-        self.title("Main Window")
-        self.geometry("800x600")
+#         # Main window settings
+#         self.title("Main Window")
+#         self.geometry("800x600")
         
-        # Button to open the popup
-        self.open_popup_button = ttk.Button(self, text="Open Popup", command=self.open_popup)
-        self.open_popup_button.pack(pady=20)
+#         # Button to open the popup
+#         self.open_popup_button = ttk.Button(self, text="Open Popup", command=self.open_popup)
+#         self.open_popup_button.pack(pady=20)
 
-    def open_popup(self):
-        # Create the popup window
-        self.popup = ttk.Toplevel(self)
-        self.popup.title("Popup Window")
-        self.popup.geometry("400x300")
+#     def open_popup(self):
+#         # Create the popup window
+#         self.popup = ttk.Toplevel(self)
+#         self.popup.title("Popup Window")
+#         self.popup.geometry("400x300")
 
-        # Treeview (list box) with two columns
-        self.treeview = ttk.Treeview(self.popup, columns=("Column 1", "Column 2"), show="headings")
-        self.treeview.heading("Column 1", text="Column 1")
-        self.treeview.heading("Column 2", text="Column 2")
-        self.treeview.pack(pady=10, padx=10, expand=True, fill=tk.BOTH)
+#         # Treeview (list box) with two columns
+#         self.treeview = ttk.Treeview(self.popup, columns=("Column 1", "Column 2"), show="headings")
+#         self.treeview.heading("Column 1", text="Column 1")
+#         self.treeview.heading("Column 2", text="Column 2")
+#         self.treeview.pack(pady=10, padx=10, expand=True, fill=tk.BOTH)
 
-        # Labels and Entry fields in a grid layout
-        self.label1 = ttk.Label(self.popup, text="Input 1:")
-        self.entry1 = ttk.Entry(self.popup)
-        self.label2 = ttk.Label(self.popup, text="Input 2:")
-        self.entry2 = ttk.Entry(self.popup)
+#         # Labels and Entry fields in a grid layout
+#         self.label1 = ttk.Label(self.popup, text="Input 1:")
+#         self.entry1 = ttk.Entry(self.popup)
+#         self.label2 = ttk.Label(self.popup, text="Input 2:")
+#         self.entry2 = ttk.Entry(self.popup)
         
-        self.label1.grid(row=0, column=0, padx=10, pady=5, sticky=tk.W)
-        self.entry1.grid(row=0, column=1, padx=10, pady=5, sticky=tk.EW)
-        self.label2.grid(row=1, column=0, padx=10, pady=5, sticky=tk.W)
-        self.entry2.grid(row=1, column=1, padx=10, pady=5, sticky=tk.EW)
+#         self.label1.grid(row=0, column=0, padx=10, pady=5, sticky=tk.W)
+#         self.entry1.grid(row=0, column=1, padx=10, pady=5, sticky=tk.EW)
+#         self.label2.grid(row=1, column=0, padx=10, pady=5, sticky=tk.W)
+#         self.entry2.grid(row=1, column=1, padx=10, pady=5, sticky=tk.EW)
 
-        self.popup.grid_columnconfigure(1, weight=1)  # Make the second column expandable
+#         self.popup.grid_columnconfigure(1, weight=1)  # Make the second column expandable
 
-        # Buttons for update and cancel
-        self.update_button = ttk.Button(self.popup, text="Update", command=self.update_list)
-        self.cancel_button = ttk.Button(self.popup, text="Cancel", command=self.popup.destroy)
-        self.update_button.grid(row=2, column=0, padx=10, pady=10)
-        self.cancel_button.grid(row=2, column=1, padx=10, pady=10, sticky=tk.E)
+#         # Buttons for update and cancel
+#         self.update_button = ttk.Button(self.popup, text="Update", command=self.update_list)
+#         self.cancel_button = ttk.Button(self.popup, text="Cancel", command=self.popup.destroy)
+#         self.update_button.grid(row=2, column=0, padx=10, pady=10)
+#         self.cancel_button.grid(row=2, column=1, padx=10, pady=10, sticky=tk.E)
 
-    def update_list(self):
-        # Get the values from the entry fields
-        value1 = self.entry1.get()
-        value2 = self.entry2.get()
+#     def update_list(self):
+#         # Get the values from the entry fields
+#         value1 = self.entry1.get()
+#         value2 = self.entry2.get()
 
-        # Insert the values into the treeview
-        self.treeview.insert('', 'end', values=(value1, value2))
+#         # Insert the values into the treeview
+#         self.treeview.insert('', 'end', values=(value1, value2))
 
-        # Clear the entry fields
-        self.entry1.delete(0, tk.END)
-        self.entry2.delete(0, tk.END)
+#         # Clear the entry fields
+#         self.entry1.delete(0, tk.END)
+#         self.entry2.delete(0, tk.END)
 
 
-if __name__ == "__main__":
-    app = MainApp(themename="minty")
-    app.mainloop()
+# if __name__ == "__main__":
+#     app = MainApp(themename="minty")
+#     app.mainloop()
+
+
+
+
+########################## CSV DELETE DATA
+
+
+import os
+
+csv_path = r"E:\github_projects\python_modules\ttk_bootstrape\orange\tags_details.csv"
+open(csv_path, 'w').close()
